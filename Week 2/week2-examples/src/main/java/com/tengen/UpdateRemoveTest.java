@@ -21,6 +21,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 import java.net.UnknownHostException;
@@ -28,56 +29,85 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UpdateRemoveTest {
-    public static void main(String[] args) throws UnknownHostException {
-        DBCollection collection = createCollection();
+	public static void main(String[] args) throws UnknownHostException {
+		DBCollection collection = createCollection();
 
-        List<String> names = Arrays.asList("alice", "bobby", "cathy", "david", "ethan");
-        for (String name : names) {
-            collection.insert(new BasicDBObject("_id", name));
-        }
+		List<String> names = Arrays.asList("alice", "bobby", "cathy", "david",
+				"ethan");
+		for (String name : names) {
+			collection.insert(new BasicDBObject("_id", name));
+		}
 
-        // see scratch method
+		// see scratch method
+		runPro();
+		// printCollection(collection);
+	}
 
-        printCollection(collection);
-    }
+	private static void runPro() throws UnknownHostException {
+		// TODO Auto-generated method stub
+		MongoClient client = new MongoClient();
+		DB db = client.getDB("students");
+		DBCollection collection = db.getCollection("grades");
 
-    // these are all the statement I used throughout the lecture.
-    private static void scratch(DBCollection collection) {
-        collection.update(new BasicDBObject("_id", "alice"),
-                new BasicDBObject("age", 24));
+		DBObject query = new BasicDBObject("type", "homework");
+		DBCursor cursor = collection.find(query);
+		DBObject object = null;
+		String student_id = "";
+		Double score = 0.0;
+		try {
+			while (cursor.hasNext()) {
+				object = cursor.next();
+				if(object.get("student_id") == student_id){
+					if((Double) object.get("score") < score){
+						
+					}
+				}else{
+					student_id = object.get("student_id").toString();
+					score = (Double) object.get("score");
+				}
+			}
+		} finally {
+			cursor.close();
+		}
+	}
 
-        collection.update(new BasicDBObject("_id", "alice"),
-                new BasicDBObject("$set", new BasicDBObject("age", 24)));
+	// these are all the statement I used throughout the lecture.
+	private static void scratch(DBCollection collection) {
+		collection.update(new BasicDBObject("_id", "alice"), new BasicDBObject(
+				"age", 24));
 
-        collection.update(new BasicDBObject("_id", "alice"),
-                new BasicDBObject(new BasicDBObject("gender", "F")));
+		collection.update(new BasicDBObject("_id", "alice"), new BasicDBObject(
+				"$set", new BasicDBObject("age", 24)));
 
-        collection.update(new BasicDBObject("_id", "frank"),
-                new BasicDBObject("$set", new BasicDBObject("age", 24)), true, false);
+		collection.update(new BasicDBObject("_id", "alice"), new BasicDBObject(
+				new BasicDBObject("gender", "F")));
 
-        collection.update(new BasicDBObject(),
-                new BasicDBObject("$set", new BasicDBObject("title", "Dr")), false, true);
+		collection.update(new BasicDBObject("_id", "frank"), new BasicDBObject(
+				"$set", new BasicDBObject("age", 24)), true, false);
 
-        collection.remove(new BasicDBObject("_id", "frank"));
-    }
+		collection.update(new BasicDBObject(), new BasicDBObject("$set",
+				new BasicDBObject("title", "Dr")), false, true);
 
-    private static DBCollection createCollection() throws UnknownHostException {
-        MongoClient client = new MongoClient();
-        DB db = client.getDB("course");
-        DBCollection collection = db.getCollection("UpdateRemoveTest");
-        collection.drop();
-        return collection;
-    }
+		collection.remove(new BasicDBObject("_id", "frank"));
+	}
 
-    private static void printCollection(final DBCollection collection) {
-        DBCursor cursor = collection.find().sort(new BasicDBObject("_id", 1));
-        try {
-            while (cursor.hasNext()) {
-                System.out.println(cursor.next());
-            }
-        } finally {
-            cursor.close();
-        }
+	private static DBCollection createCollection() throws UnknownHostException {
+		MongoClient client = new MongoClient();
+		DB db = client.getDB("course");
+		DBCollection collection = db.getCollection("UpdateRemoveTest");
+		collection.drop();
+		return collection;
+	}
 
-    }
+	private static void printCollection(final DBCollection collection) {
+		DBCursor cursor = collection.find().sort(new BasicDBObject("_id", 1));
+		try {
+			while (cursor.hasNext()) {
+				System.out.println(cursor.next());
+			}
+		} finally {
+			cursor.close();
+		}
+
+	}
 }

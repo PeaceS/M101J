@@ -39,7 +39,7 @@ public class BlogPostDAO {
 
         DBObject post = null;
         // XXX HW 3.2,  Work Here
-
+        post = postsCollection.findOne(new BasicDBObject("permalink", permalink));
 
 
         return post;
@@ -52,7 +52,7 @@ public class BlogPostDAO {
         List<DBObject> posts = null;
         // XXX HW 3.2,  Work Here
         // Return a list of DBObjects, each one a post from the posts collection
-
+        posts = postsCollection.find();
         return posts;
     }
 
